@@ -1,0 +1,52 @@
+<section class="container py-5 h-100">
+    <div class="row d-flex justify-content-center align-items-center h-100">
+        <div class="col col-xl-10">
+            <div class="card">
+                <div class="card-body p-4 p-lg-5 text-black">
+                    <h5 class="fw-normal mb-3 pb-3" style="letter-spacing: 1px;">
+                        @CardTitle
+                    </h5>
+                    @if (LoginMode)
+                    {
+                        <LoginForm />
+                    }
+                    else
+                    {
+                        <RegisterForm />
+                    }
+                    <div class="py-5">
+                        <p>
+                            @QuestionTitle
+                            <button type="button" class="btn btn-outline-primary btn-sm border-1 border-black"
+                                @onclick="SwitchMode">@ButtonTitle
+                            </button>
+                        </p>
+                        <a href="#!" class="small text-muted">Terms of use</a>
+                        <a href="#!" class="small text-muted">Privacy policy</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+@code {
+    [Parameter]
+    public bool LoginMode { get; set; } = true;
+    public void SwitchMode()
+    {
+        LoginMode = !LoginMode;
+    }
+    private string CardTitle
+    {
+        get => LoginMode ? "Sign In" : "Sign Up";
+    }
+    private string ButtonTitle
+    {
+        get => !LoginMode ? "Login" : "Register";
+    }
+    private string QuestionTitle
+    {
+        get => LoginMode ? "Don't have an account?" : "Do you have an account already?";
+    }
+}

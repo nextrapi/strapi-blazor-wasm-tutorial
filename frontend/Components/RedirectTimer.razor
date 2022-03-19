@@ -1,0 +1,24 @@
+@Time
+@inject NavigationManager NavManager
+
+@code {
+    [Parameter] public int Time { get; set; } = 5;
+    [Parameter] public string URL { get; set; } = "/";
+
+    public async void StartTimerAsync()
+    {
+        while (Time > 0)
+        {
+            Time--;
+            StateHasChanged();
+            await Task.Delay(1000);
+        }
+        if (Time == 0)
+        {
+            NavManager.NavigateTo(URL);
+        }
+    }
+
+    protected override void OnInitialized()
+    => StartTimerAsync();
+}

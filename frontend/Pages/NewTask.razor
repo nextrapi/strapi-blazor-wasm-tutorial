@@ -1,0 +1,12 @@
+@page "/tasks/new"
+<RestrictedView>
+    <PageTitle>Create New Task</PageTitle>
+    <TaskForm />
+
+</RestrictedView>
+
+@code {
+
+    [Parameter] public int QueryId { get; set; }
+
+}

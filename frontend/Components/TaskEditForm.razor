@@ -1,0 +1,112 @@
+@inject AppServices.TasksApi TasksApi
+@inject NavigationManager NavManager
+
+@if (NotFound)
+{
+    <h1>Task Not Found</h1>
+    <p>Redirecting in
+        <RedirectTimer Time="5" URL="/tasks" />
+    </p>
+
+}
+else if (CurrentTask == null)
+{
+    <Spinner />
+
+}
+else
+{
+    <h1>Edit Task</h1>
+    <p>You are editing task with id:@QueryId</p>
+    <EditForm EditContext="@editContext" OnValidSubmit="@SubmitForm">
+        <DataAnnotationsValidator />
+        <ValidationSummary />
+        <CustomInputText Title="Task Title" Required="true" @bind-Value="TaskEditState.title" />
+        <CustomTextArea Title="Description" type="password" Required="true" @bind-Value="TaskEditState.description" />
+        <SubmitButton Title="@EditButtonTitle()" Disabled="@DisableSubmit" />
+        <button type="button" @onclick="@DeleteTask" class="card-link btn-lg btn btn-danger">Delete</button>
+    </EditForm>
+}
+
+@code {
+    private EditContext? editContext;
+    [CascadingParameter] public TaskDeleteModal? TaskDeleteModal { get; set; }
+    [CascadingParameter] public Toast? Toast { get; set; }
+
+    [CascadingParameter]
+    public AppState? AppState { get; set; }
+    [Parameter] public int QueryId { get; set; }
+    public TaskFormState TaskEditState = new TaskFormState();
+    private TaskFormState TaskOriginalState = new TaskFormState();
+    private bool NotFound { get; set; } = false;
+    public async Task SubmitForm()
+    {
+        var data = new TaskRequest(data: TaskEditState);
+        try
+        {
+            await TasksApi.Update(AppState!.GetToken(), QueryId, data);
+            await FetchAndSetTask();
+            Toast?.Set("success", "Changes were Succesfully Saved!");
+        }
+        catch (HttpRequestException e)
+        {
+            Toast?.Set("danger", e.ToString());
+        }
+
+    }
+    private void DeleteTask()
+    {
+        if (this.CurrentTask != null)
+        {
+            TaskDeleteModal?.Trigger(this.CurrentTask.data.id, FetchAndSetTask);
+        }
+    }
+
+    private TaskItem? CurrentTask;
+
+    protected override async Task OnInitializedAsync()
+    {
+        editContext = new(TaskEditState);
+        editContext.OnFieldChanged += HandleFieldChanged;
+        await FetchAndSetTask();
+    }
+    private async Task FetchAndSetTask()
+    {
+        try
+        {
+            CurrentTask = await TasksApi.Find(AppState!.GetToken(), QueryId);
+            TaskEditState.title = CurrentTask.data.attributes.title;
+            TaskEditState.description = CurrentTask.data.attributes.description;
+            TaskOriginalState = (TaskFormState)TaskEditState.Clone();
+            CompareForms();
+        }
+        catch (HttpRequestException? e)
+        {
+            Toast?.Set("danger", e.ToString());
+            NotFound = true;
+        }
+    }
+    private void HandleFieldChanged(object? sender, FieldChangedEventArgs e)
+    {
+        if (editContext is not null)
+        {
+            CompareForms();
+            StateHasChanged();
+        }
+    }
+    public bool DisableSubmit { get; set; } = true;
+    private void CompareForms()
+    {
+        if (!TaskEditState.Equals(TaskOriginalState) && (editContext != null && editContext.Validate()))
+        {
+            DisableSubmit = false;
+        }
+        else
+        {
+            DisableSubmit = true;
+        }
+    }
+    private string EditButtonTitle() => !(editContext != null && editContext.Validate()) ? "Not Valid" :
+    TaskEditState.Equals(TaskOriginalState) ?
+    "No Changes" : "Save Changes";
+}

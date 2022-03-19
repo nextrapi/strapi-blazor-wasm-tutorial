@@ -1,0 +1,62 @@
+@inject AppServices.TasksApi TasksApi
+@inject NavigationManager NavManager
+
+@if (IsSuccesful && NewTask != null)
+{
+    <h1>Task with ID:@NewTask.data.id Created Succesfully </h1>
+    <p>Redirecting in
+        <RedirectTimer Time="0" URL="/tasks" />
+    </p>
+
+}
+else if (IsLoading == true)
+{
+    <Spinner />
+
+}
+else
+{
+    <h1>Create a New Task</h1>
+    <p>You are creating a task new task.</p>
+    <EditForm Model="@NewTaskState" OnValidSubmit="@SubmitForm">
+        <DataAnnotationsValidator />
+        <ValidationSummary />
+        <CustomInputText Title="Task Title" Required="true" @bind-Value="NewTaskState.title" />
+        <CustomTextArea Title="Description" type="password" Required="true" @bind-Value="NewTaskState.description" />
+        <SubmitButton Title="Create" />
+    </EditForm>
+}
+
+@code {
+    [CascadingParameter] public TaskDeleteModal? TaskDeleteModal { get; set; }
+    [CascadingParameter] public Toast? Toast { get; set; }
+
+    [CascadingParameter]
+    public AppState? AppState { get; set; }
+    public TaskFormState NewTaskState = new TaskFormState();
+    private bool IsSuccesful { get; set; } = false;
+    private bool IsLoading { get; set; } = false;
+
+    private TaskItem? NewTask { get; set; }
+    public async Task SubmitForm()
+    {
+        IsLoading = true;
+        StateHasChanged();
+        try
+        {
+            var data = new TaskRequest(data: NewTaskState);
+            NewTask = await TasksApi!.Create(AppState!.GetToken(), data);
+            IsLoading = false;
+            IsSuccesful = true;
+            Toast?.Set("success", "New Task Succesfully Created!");
+            StateHasChanged();
+        }
+        catch (HttpRequestException e)
+        {
+            IsLoading = false;
+            Toast?.Set("danger", e.ToString());
+        }
+    }
+
+
+}

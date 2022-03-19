@@ -1,0 +1,44 @@
+@inject AppServices.TasksApi Tasks
+
+
+@if (AppState?.TaskList == null)
+{
+    <Spinner />
+}
+else
+{
+    <TaskDeleteModal>
+        <div class="row">
+            @foreach (var task in AppState.TaskList.data)
+            {
+                <div class="col-12 col-md-6 col-lg-4 col-xl-3">
+                    <TaskCard id="@task.id" title="@task.attributes.title" description="@task.attributes.description" />
+                </div>
+            }
+        </div>
+    </TaskDeleteModal>
+
+}
+
+@code {
+    [CascadingParameter]
+    public AppState? AppState { get; set; }
+
+    [CascadingParameter]
+    public Toast? Toast { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            await AppState!.FetchTaskList();
+        }
+        catch (HttpRequestException e)
+        {
+            Toast?.Set("danger", e.ToString());
+
+        }
+    }
+
+
+}

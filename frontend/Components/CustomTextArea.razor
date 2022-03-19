@@ -1,0 +1,20 @@
+@inherits InputTextArea
+<div class=" mb-4">
+    <label class="form-label" for="identifier">
+        @Title
+        @if (Required)
+        {
+            <span class="text-danger mx-1">*</span>
+        }
+    </label>
+    <textarea @attributes="AdditionalAttributes" class="form-control form-control-lg" @bind="CurrentValueAsString"
+        @bind:event="oninput" />
+</div>
+
+@code {
+    [Parameter]
+    public bool Required { get; set; } = false;
+    [Parameter]
+    public string Title { get; set; } = "";
+
+}

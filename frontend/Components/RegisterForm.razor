@@ -1,0 +1,22 @@
+<EditForm Model="@RegisterState" OnValidSubmit="@SubmitForm">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+    <CustomInputText Title="Email address" Required="true" @bind-Value="RegisterState.email" />
+    <CustomInputText Title="Username" Required="true" @bind-Value="RegisterState.username" />
+    <CustomInputText Title="Password" type="password" Required="true" @bind-Value="RegisterState.password" />
+    <SubmitButton Title="Register" />
+</EditForm>
+
+@code {
+    [CascadingParameter]
+    public AppState? AppState { get; set; }
+
+    public RegisterFormState RegisterState = new RegisterFormState();
+
+    public async Task SubmitForm()
+    {
+        await AppState!.RegisterUser(RegisterState);
+    }
+
+
+}

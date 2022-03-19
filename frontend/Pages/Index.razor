@@ -1,0 +1,28 @@
+﻿@page "/"
+
+<PageTitle>Index</PageTitle>
+
+
+@if (AppState!.isAuth())
+{
+    <h1>Hello, @AppState!.Username()!</h1>
+
+    <p>
+        Welcome to your new app.
+    </p>
+}
+else
+{
+    <h1>Hello, world!</h1>
+
+    <AuthForm />
+}
+
+
+
+<SurveyPrompt Title="How is Blazor working for you?" />
+@code {
+    [CascadingParameter]
+    public AppState? AppState { get; set; }
+
+}

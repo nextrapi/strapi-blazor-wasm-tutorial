@@ -1,0 +1,13 @@
+@page "/tasks/{QueryId:int?}"
+<RestrictedView>
+    <PageTitle>Edit Task</PageTitle>
+    <TaskDeleteModal>
+        <TaskEditForm QueryId="@QueryId" />
+    </TaskDeleteModal>
+</RestrictedView>
+
+@code {
+
+    [Parameter] public int QueryId { get; set; }
+
+}

@@ -1,0 +1,31 @@
+<CascadingValue Value="this">
+    @if (Show)
+    {
+        <div class=" position-fixed bottom-0 end-0 pb-3 pe-5 " style="z-index: 1000; max-width:50%;" role="alert">
+            <div class="alert alert-@Type text-wrap">@Message</div>
+        </div>
+    }
+    @ChildContent
+</CascadingValue>
+@code {
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+    bool Show { get; set; } = false;
+    string Type { get; set; } = "primary";
+    string Message { get; set; } = "";
+    
+    public int Time { get; set; } = 5;
+
+    public async Task Set(string Type, string Message, int Duration = 10)
+    {
+        this.Type = Type;
+        this.Message = Message;
+        this.Show = true;
+        StateHasChanged();
+        await Task.Delay(TimeSpan.FromSeconds(Duration));
+        this.Show = false;
+        this.Type = "primary";
+        this.Message = "";
+        StateHasChanged();
+    }
+}

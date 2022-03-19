@@ -1,0 +1,23 @@
+@inject AppServices.AuthApi AuthApi
+
+<EditForm Model="@LoginState" OnValidSubmit="@SubmitForm">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+    <CustomInputText Title="Email address or Username" Required="true" @bind-Value="LoginState.identifier" />
+    <CustomInputText Title="Password" type="password" Required="true" @bind-Value="LoginState.password" />
+    <SubmitButton Title="Login" />
+</EditForm>
+
+@code {
+    [CascadingParameter]
+    public AppState? AppState { get; set; }
+
+    public LoginFormState LoginState = new LoginFormState();
+
+    public async Task SubmitForm()
+    {
+        await AppState!.LoginUser(LoginState);
+    }
+
+
+}

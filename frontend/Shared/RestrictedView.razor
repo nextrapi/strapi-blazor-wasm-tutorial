@@ -1,0 +1,20 @@
+@if (AppState!.isAuth())
+{
+    @ChildContent
+}
+else
+{
+    <PageTitle>Login Required</PageTitle>
+    <div class="alert alert-danger" role="alert">
+        This Page is Restricted to Users.
+    </div>
+    <AuthForm />
+}
+
+@code {
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+
+    [CascadingParameter]
+    AppState? AppState { get; set; }
+}

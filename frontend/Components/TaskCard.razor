@@ -1,0 +1,27 @@
+@inject NavigationManager NavigationManager
+<div class="card">
+    <div class="card-body">
+        <h5 class="card-title">@title</h5>
+        <p class="card-text">@description</p>
+        <button @onclick="@NavigateToTask" class="btn btn-sm btn-primary card-link">Edit</button>
+        <button @onclick="@DeleteTask" class="card-link btn-sm btn btn-danger">Delete</button>
+    </div>
+</div>
+
+@code {
+    [CascadingParameter] public TaskDeleteModal? TaskDeleteModal { get; set; }
+    [CascadingParameter] public AppState? AppState { get; set; }
+    [Parameter] public int id { get; set; }
+    [Parameter] public string? title { get; set; }
+    [Parameter] public string? description { get; set; }
+
+
+    private void NavigateToTask()
+    {
+        NavigationManager.NavigateTo($"tasks/{id}");
+    }
+    private void DeleteTask()
+    {
+        TaskDeleteModal?.Trigger(this.id, AppState!.FetchTaskList);
+    }
+}

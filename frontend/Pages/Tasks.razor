@@ -1,0 +1,21 @@
+@page "/tasks"
+@using System.Net.Http
+@using System.Net.Http.Json
+@using System.Threading.Tasks
+@inject IHttpClientFactory ClientFactory
+@inject NavigationManager NavManager
+
+<RestrictedView>
+    <PageTitle>Tasks</PageTitle>
+    <div class="d-flex justify-content-between">
+        <h1>Tasks To Do</h1>
+        <div class="d-flex">
+            <button @onclick="GoToNewPage" class="btn btn-sm btn-outline-secondary my-auto">New
+                Task</button>
+        </div>
+    </div>
+    <TaskCardList />
+</RestrictedView>
+@code {
+    private void GoToNewPage() { NavManager.NavigateTo("/tasks/new"); }
+}

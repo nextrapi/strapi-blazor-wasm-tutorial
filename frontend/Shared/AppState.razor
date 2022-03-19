@@ -1,0 +1,55 @@
+@using System.Net.Http
+@using System.Net.Http.Json
+@using System.Threading.Tasks
+@inject IHttpClientFactory ClientFactory
+@inject AppServices.AuthApi AuthApi
+@inject AppServices.TasksApi TasksApi
+
+<CascadingValue Value="this">
+    <Toast>
+        @ChildContent
+    </Toast>
+</CascadingValue>
+@code {
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+    private UserState? UserState;
+    public TaskList? TaskList
+    {
+        get; private set;
+    }
+    public bool isAuth() => (UserState != null) ? true : false;
+    public void Logout()
+    {
+        UserState = null;
+        StateHasChanged();
+    }
+    public async Task LoginUser(LoginFormState LoginState)
+    {
+        UserState = await AuthApi.Login(LoginState);
+        StateHasChanged();
+    }
+    public async Task RegisterUser(RegisterFormState RegisterState)
+    {
+        UserState = await AuthApi.Register(RegisterState);
+        StateHasChanged();
+    }
+    public async Task FetchTaskList()
+    {
+        TaskList = await TasksApi.FindAll(GetToken());
+        StateHasChanged();
+    }
+    public string GetToken()
+    {
+        if (UserState != null)
+        {
+            return UserState.jwt;
+        }
+        else
+        {
+            return "";
+        }
+    }
+    public string Username() => this.UserState?.user.username!;
+
+}
